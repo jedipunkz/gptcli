@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"gptcli/domain/repository"
-	"gptcli/infrastructure/openai"
+	openaiinfra "gptcli/infrastructure/openai"
 	"gptcli/usecase"
 
 	"github.com/spf13/cobra"
@@ -14,26 +14,29 @@ import (
 )
 
 var validModels = map[string]bool{
-	"gpt-4-turbo-preview": true,
-	"gpt-4":               true,
-	"gpt-4-32k":           true,
-	"gpt-3.5-turbo":       true,
-	"gpt-3.5-turbo-16k":   true,
+	"gpt-4.1": true,
+	"gpt-4o":  true,
+	// "o4-mini": true,
+	// "o3":      true,
+	// "o3-mini": true,
+	// "o1":      true,
 }
 
 // モデルのエイリアス
-var modelAliases = map[string]string{
-	"o4":      "gpt-4-turbo-preview",
-	"o3":      "gpt-3.5-turbo",
-	"o3-mini": "gpt-3.5-turbo",
-}
+var modelAliases = map[string]string{}
 
 // モデル名を解決する関数
 func resolveModelName(modelName string) string {
+	// モデル名が直接指定されている場合はそのまま返す
+	if validModels[modelName] {
+		return modelName
+	}
+	// エイリアスの場合は解決
 	if alias, ok := modelAliases[modelName]; ok {
 		return alias
 	}
-	return modelName
+	// それ以外の場合はデフォルトのモデルを返す
+	return "gpt-4o"
 }
 
 var rootCmd = &cobra.Command{
@@ -48,8 +51,8 @@ func initDependencies() (repository.ChatRepository, repository.GenerationReposit
 		os.Exit(1)
 	}
 
-	chatRepo := openai.NewChatClient(apiKey)
-	genRepo := openai.NewGenerationClient(apiKey)
+	chatRepo := openaiinfra.NewChatClient(apiKey)
+	genRepo := openaiinfra.NewGenerationClient(apiKey)
 	chatUseCase := usecase.NewChatUseCase(chatRepo)
 	genUseCase := usecase.NewGenerationUseCase(genRepo)
 	return chatRepo, genRepo, chatUseCase, genUseCase
@@ -97,7 +100,7 @@ var generateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		model, _ := cmd.Flags().GetString("model")
 		temperature, _ := cmd.Flags().GetFloat32("temperature")
-		maxTokens, _ := cmd.Flags().GetInt("max-tokens")
+		maxTokens, _ := cmd.Flags().GetInt("max-completion-tokens")
 		stream, _ := cmd.Flags().GetBool("stream")
 
 		_, _, _, genUseCase := initDependencies()
@@ -195,7 +198,7 @@ func init() {
 
 	generateCmd.Flags().String("model", "gpt-3.5-turbo", "Model to use")
 	generateCmd.Flags().Float32("temperature", 0.7, "Temperature for generation")
-	generateCmd.Flags().Int("max-tokens", 1000, "Maximum tokens to generate")
+	generateCmd.Flags().Int("max-completion-tokens", 1000, "Maximum completion tokens to generate")
 	generateCmd.Flags().Bool("stream", true, "Stream the response")
 
 	configCmd.AddCommand(configSetCmd)

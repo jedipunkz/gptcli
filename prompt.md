@@ -60,16 +60,12 @@ gptcli generate "プロンプト" --model gpt-3.5-turbo
 
 #### 利用可能なモデル
 - 標準モデル:
-  - `gpt-4-turbo-preview`
-  - `gpt-4`
-  - `gpt-4-32k`
-  - `gpt-3.5-turbo`
-  - `gpt-3.5-turbo-16k`
-
-- エイリアス:
-  - `o4` → `gpt-4-turbo-preview`
-  - `o3` → `gpt-3.5-turbo`
-  - `o3-mini` → `gpt-3.5-turbo`
+  - `gpt-4.1` (最新のGPT-4モデル)
+  - `gpt-4o` (GPT-4の軽量版)
+  <!-- - `o4-mini` (GPT-4の軽量版)
+  - `o3` (GPT-4の軽量版)
+  - `o3-mini` (GPT-4の軽量版)
+  - `o1` (GPT-4の軽量版) -->
 
 ### 技術要件
 - 言語: Go

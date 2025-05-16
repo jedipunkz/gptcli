@@ -33,10 +33,14 @@ func (c *GenerationClient) CreateCompletion(prompt string, modelName string, tem
 		resp, err := c.client.CreateChatCompletion(
 			context.Background(),
 			openai.ChatCompletionRequest{
-				Model:       modelName,
-				Messages:    messages,
-				Temperature: temperature,
-				MaxTokens:   maxTokens,
+				Model:               modelName,
+				Messages:            messages,
+				Temperature:         1.0,
+				TopP:                1.0,
+				N:                   1,
+				PresencePenalty:     0.0,
+				FrequencyPenalty:    0.0,
+				MaxCompletionTokens: maxTokens,
 			},
 		)
 		if err != nil {
@@ -49,10 +53,14 @@ func (c *GenerationClient) CreateCompletion(prompt string, modelName string, tem
 	stream, err := c.client.CreateChatCompletionStream(
 		context.Background(),
 		openai.ChatCompletionRequest{
-			Model:       modelName,
-			Messages:    messages,
-			Temperature: temperature,
-			MaxTokens:   maxTokens,
+			Model:               modelName,
+			Messages:            messages,
+			Temperature:         1.0,
+			TopP:                1.0,
+			N:                   1,
+			PresencePenalty:     0.0,
+			FrequencyPenalty:    0.0,
+			MaxCompletionTokens: maxTokens,
 		},
 	)
 	if err != nil {
